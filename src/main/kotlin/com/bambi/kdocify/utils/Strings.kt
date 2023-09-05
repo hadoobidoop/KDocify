@@ -1,4 +1,4 @@
-package com.bambi.bambikdocer.utils
+package com.bambi.kdocify.utils
 
 /**
  * Exclusions for [...].

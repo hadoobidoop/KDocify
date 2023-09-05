@@ -1,18 +1,10 @@
-package com.bambi.bambikdoc.generators
+package com.bambi.kdocify.generators
 
 import com.intellij.psi.*
 
 const val NEXT_LINE = "\n"
 
-/**
- * Kotlin documentation generator.
- */
 interface KDocGenerator {
-    /**
-     * Get generated comment.
-     *
-     * @return Comment
-     */
     fun getGeneratedComment(): String
 
     /**

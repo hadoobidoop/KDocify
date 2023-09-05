@@ -1,20 +1,14 @@
-package com.bambi.bambikdoc.generators
+package com.bambi.kdocify.generators
 
 import org.jetbrains.kotlin.psi.KtSecondaryConstructor
 
-/**
- * Secondary constructor Kotlin documentation generator.
- *
- * @property ktConstructor [KtSecondaryConstructor]
- * @constructor Create [SecondaryConstructorKDocGenerator]
- */
-class SecondaryConstructorKDocGenerator(private val ktConstructor: KtSecondaryConstructor): KDocGenerator {
+class SecondaryConstructorKDocGenerator(private val ktConstructor: KtSecondaryConstructor) : KDocGenerator {
     override fun getGeneratedComment(): String {
         with(ktConstructor) {
             val builder = StringBuilder()
             builder.appendLine("/**")
-                    .appendLine("* Secondary constructor for [${name}].")
-                    .appendLine("*")
+                .appendLine("* Secondary constructor for [${name}].")
+                .appendLine("*")
 
             if (typeParameters.isNotEmpty())
                 builder.appendLine(typeParameters.toKdocParams())

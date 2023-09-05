@@ -1,1 +1,1 @@
-rootProject.name = "bambi-kdocer"
+rootProject.name = "KDocify"

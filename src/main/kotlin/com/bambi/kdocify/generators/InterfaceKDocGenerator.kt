@@ -1,15 +1,8 @@
-package com.bambi.bambikdoc.generators
+package com.bambi.kdocify.generators
 
-import com.bambi.bambikdoc.utils.getDefaultCommentFromName
+import com.bambi.kdocify.utils.getDefaultCommentFromName
 import org.jetbrains.kotlin.psi.KtClass
 
-
-/**
- * Interface Kotlin documentation generator.
- *
- * @property klass [KtClass]
- * @constructor Create [InterfaceKDocGenerator]
- */
 class InterfaceKDocGenerator(private val klass: KtClass) : KDocGenerator {
     override fun getGeneratedComment(): String = StringBuilder()
         .appendLine("/**")

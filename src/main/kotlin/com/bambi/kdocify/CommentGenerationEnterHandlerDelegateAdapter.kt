@@ -1,3 +1,9 @@
+package com.bambi.kdocify
+import com.bambi.kdocify.generators.ClassKDocGenerator
+import com.bambi.kdocify.generators.InterfaceKDocGenerator
+import com.bambi.kdocify.generators.NamedFunctionKDocGenerator
+import com.bambi.kdocify.generators.SecondaryConstructorKDocGenerator
+import com.bambi.kdocify.utils.getDefaultCommentFromName
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
@@ -9,10 +15,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.text.CharArrayUtil
-import generators.ClassKDocGenerator
-import generators.InterfaceKDocGenerator
-import generators.NamedFunctionKDocGenerator
-import generators.SecondaryConstructorKDocGenerator
 import org.jetbrains.kotlin.idea.kdoc.KDocElementFactory
 import org.jetbrains.kotlin.kdoc.psi.api.KDoc
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocSection
@@ -21,7 +23,6 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtSecondaryConstructor
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
-import utils.getDefaultCommentFromName
 
 /**
  * Comment generation enter handler delegate adapter.

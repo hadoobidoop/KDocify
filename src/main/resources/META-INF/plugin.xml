@@ -5,18 +5,43 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Bambi-kdocer</name>
+    <name>KDocify - Kotlin Doc Generator</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="bambi@kakaobank.com" url="https://www.kakaobank.com">bambi</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
-  ]]></description>
+
+<h2>KDocify: The Simple, Powerful Kotlin Doc Generator for IntelliJ</h2>
+
+<p>Elevate your Kotlin coding experience with KDocify, the intuitive documentation generator crafted with inspiration from Javadoc. Seamlessly integrated into IntelliJ, KDocify combines simplicity with powerful features, making it a must-have for every Kotlin developer.</p>
+
+<h3>Features:</h3>
+<ul>
+    <li><strong>Instant Documentation</strong>: Instantly generate Kotlin-optimized, structured comments by typing <code>/**</code> and pressing <code>Enter</code>.</li>
+
+    <li><strong>Module-Specific Annotations</strong>: Perfect for multi-module projects. Set the service or module name in the tools menu, and KDocify will automatically prefix your method documentation with the specified name, ensuring clarity in complex projects.
+        <pre>
+  /**
+  * [serviceName] methodName
+  *
+  * @param name
+  *
+  */
+            </pre>
+    </li>
+
+    <li><strong>Tailored Templates</strong>: While our default template focuses on clarity and comprehensiveness, KDocify goes beyond. It provides distinct templates for interfaces, classes, and method names, granting you the freedom to match your project's unique requirements.</li>
+
+    <li><strong>Consistency &amp; Standardization</strong>: Maintain a uniform comment style throughout your projects, promoting code readability and understanding.</li>
+</ul>
+
+<p>KDocify simplifies the intricacies of documentation while offering robust customization. Whether you're tackling a vast multi-module project or crafting a single-module app, ensure your Kotlin code remains eloquent and well-documented. Experience the blend of simplicity and power with KDocify in your IntelliJ coding journey.</p>
+
+]]></description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
@@ -24,7 +49,17 @@
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-    <extensions defaultExtensionNs="com.intellij">
 
+    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <enterHandlerDelegate implementation="com.bambi.kdocify.CommentGenerationEnterHandlerDelegateAdapter"
+                              order="first"/>
+
+        <applicationConfigurable parentId="tools" instance="com.bambi.kdocify.settings.AppSettingsConfigurable"
+                                 id="org.intellij.sdk.settings.AppSettingsConfigurable"
+                                 displayName="KDocify - Kotlin Doc Generator"/>
+        <applicationService serviceImplementation="com.bambi.kdocify.settings.AppSettingsState"/>
     </extensions>
 </idea-plugin>
