@@ -24,11 +24,7 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtSecondaryConstructor
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 
-/**
- * Comment generation enter handler delegate adapter.
- *
- * @constructor Create empty Comment generation enter handler delegate adapter
- */
+
 class CommentGenerationEnterHandlerDelegateAdapter : EnterHandlerDelegateAdapter() {
     override fun postProcessEnter(
         file: PsiFile,
@@ -77,13 +73,6 @@ class CommentGenerationEnterHandlerDelegateAdapter : EnterHandlerDelegateAdapter
         return EnterHandlerDelegate.Result.Continue
     }
 
-    /**
-     * Is comments already added.
-     *
-     * @param editor Editor
-     * @param offset Offset
-     * @return Is comments already added flag
-     */
     private fun isInKDoc(editor: Editor, offset: Int): Boolean {
         val document = editor.document
         val docChars = document.charsSequence

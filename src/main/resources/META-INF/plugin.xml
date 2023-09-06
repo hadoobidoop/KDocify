@@ -39,9 +39,33 @@
     <li><strong>Consistency &amp; Standardization</strong>: Maintain a uniform comment style throughout your projects, promoting code readability and understanding.</li>
 </ul>
 
-<p>KDocify simplifies the intricacies of documentation while offering robust customization. Whether you're tackling a vast multi-module project or crafting a single-module app, ensure your Kotlin code remains eloquent and well-documented. Experience the blend of simplicity and power with KDocify in your IntelliJ coding journey.</p>
 
 ]]></description>
+    <change-notes>
+        <![CDATA[
+<h2>Version 1.0.0</h2>
+<p>We're thrilled to introduce KDocify v1.0.0, the powerful and simple Kotlin documentation generator for IntelliJ. Experience effortless Kotlin documentation inspired by the legendary Javadoc. Here's what's new:</p>
+
+<h3>New Features:</h3>
+<ul>
+    <li><strong>Instant Documentation</strong>: Generate comments with a simple <code>/**</code> + <code>Enter</code> combo.</li>
+    <li><strong>Module Annotations</strong>: Auto-prefix your method documentation based on the module name for enhanced clarity.
+        <pre>
+  /**
+  * [serviceName] methodName
+  * @param name
+  */
+        </pre>
+    </li>
+    <li><strong>Custom Templates</strong>: Distinct templates cater to interfaces, classes, and method names for true project alignment.</li>
+    <li><strong>Comment Uniformity</strong>: Achieve a standardized comment style across all your Kotlin projects.</li>
+</ul>
+
+<p>This version lays the foundation for a simplified Kotlin documentation experience. We're eager to hear your feedback and improve further. Happy documenting!</p>
+
+]]>
+
+    </change-notes>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->

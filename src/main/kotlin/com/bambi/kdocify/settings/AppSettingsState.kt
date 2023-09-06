@@ -12,10 +12,10 @@ import org.jetbrains.annotations.Nullable
 
 @State(
     name = "com.bambi.bambikdocer.services.AppSettingsState",
-    storages = [Storage("pubVersionCheckerSettings.xml")]
+    storages = [Storage("kDocifySettings.xml")]
 )
 class AppSettingsState : PersistentStateComponent<AppSettingsState> {
-    var includePreRelease: String = ""
+    var serviceName: String = ""
 
     @Nullable
     override fun getState(): AppSettingsState {
@@ -27,7 +27,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     }
 
     companion object {
-        val instance: AppSettingsState
+        val status: AppSettingsState
             get() = ApplicationManager.getApplication().getService(AppSettingsState::class.java)
     }
 }

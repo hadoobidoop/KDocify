@@ -4,13 +4,6 @@ import com.bambi.kdocify.settings.AppSettingsState
 import org.apache.commons.lang.StringUtils
 import java.util.*
 
-/**
- * Get default comment for function or class name.
- *
- * @param isCapitalized Is comment should be capitalized
- * @receiver Class or function name
- * @return Generated comment
- */
 fun String?.getDefaultCommentFromName(isCapitalized: Boolean = true, withDot: Boolean = true): String {
     this ?: return "TODO"
 
@@ -31,7 +24,7 @@ fun String?.getDefaultCommentFromName(isCapitalized: Boolean = true, withDot: Bo
     } else {
         comment.trim()
     }
-    val includePreReleaseValue = AppSettingsState.instance.includePreRelease
+    val includePreReleaseValue = AppSettingsState.status.serviceName
 
     return if (withDot)
         "[$includePreReleaseValue] $comment."
@@ -39,12 +32,6 @@ fun String?.getDefaultCommentFromName(isCapitalized: Boolean = true, withDot: Bo
         comment
 }
 
-/**
- * Check type.
- *
- * @receiver Type
- * @return Generated comment
- */
 fun String?.getCheckedType(): String {
     this ?: return ""
 

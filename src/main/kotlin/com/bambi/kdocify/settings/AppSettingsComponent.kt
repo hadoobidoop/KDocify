@@ -7,22 +7,22 @@ import com.intellij.ui.components.JBTextField
 
 class AppSettingsComponent {
     val panel: JPanel
-    private val includePreReleasesTextField = JBTextField()
+    private val serviceNameTextField = JBTextField()
 
     init {
         panel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Set service name", includePreReleasesTextField)
-            .addTooltip(Strings.settingsIncludePreReleasesTooltip)
+            .addLabeledComponent("Set service name", serviceNameTextField)
+            .addTooltip(Strings.settingsServiceNameTooltip)
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
 
     val preferredFocusedComponent: JComponent
-        get() = includePreReleasesTextField
+        get() = serviceNameTextField
 
-    var includePreReleases: String
-        get() = includePreReleasesTextField.text
+    var serviceName: String
+        get() = serviceNameTextField.text
         set(newText) {
-            includePreReleasesTextField.text = newText
+            serviceNameTextField.text = newText
         }
 }

@@ -1,20 +1,19 @@
 package com.bambi.kdocify.settings
 
+import Strings
 import com.intellij.openapi.options.Configurable
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
+import javax.swing.JPanel
 
 class AppSettingsConfigurable : Configurable {
     private var appSettingsComponent: AppSettingsComponent? = null
 
     @Nls(capitalization = Nls.Capitalization.Title)
-    override fun getDisplayName(): String {
-        return Strings.settingsTitle
-    }
+    override fun getDisplayName(): String = Strings.settingsTitle
 
-    override fun getPreferredFocusedComponent(): JComponent {
-        return appSettingsComponent!!.preferredFocusedComponent
-    }
+    override fun getPreferredFocusedComponent(): JComponent =
+        appSettingsComponent?.preferredFocusedComponent ?: JPanel()
 
     override fun createComponent(): JComponent {
         appSettingsComponent = AppSettingsComponent()
@@ -22,25 +21,21 @@ class AppSettingsConfigurable : Configurable {
     }
 
     override fun isModified(): Boolean {
-        val settings: AppSettingsState = AppSettingsState.instance
-        return appSettingsComponent!!.includePreReleases != settings.includePreRelease
+        return appSettingsComponent?.serviceName != AppSettingsState.status.serviceName
     }
 
     override fun apply() {
         appSettingsComponent?.let {
-            val settings: AppSettingsState = AppSettingsState.instance
-            settings.includePreRelease = it.includePreReleases
+            AppSettingsState.status.serviceName = it.serviceName
         }
     }
 
     override fun reset() {
-        appSettingsComponent?.let {
-            val settings: AppSettingsState = AppSettingsState.instance
-            it.includePreReleases = settings.includePreRelease
-        }
+        appSettingsComponent?.serviceName = AppSettingsState.status.serviceName
     }
 
     override fun disposeUIResources() {
         appSettingsComponent = null
     }
 }
+
