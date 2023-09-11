@@ -12,6 +12,9 @@ repositories {
 }
 
 dependencies {
+    testImplementation("io.kotest:kotest-runner-junit5")
+    testImplementation("io.kotest.extensions:kotest-extensions-spring")
+    testImplementation("io.mockk:mockk")
 }
 
 // Configure Gradle IntelliJ Plugin

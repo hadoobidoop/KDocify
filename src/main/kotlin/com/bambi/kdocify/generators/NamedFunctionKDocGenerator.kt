@@ -1,99 +1,75 @@
 package com.bambi.kdocify.generators
 
+import com.bambi.kdocify.domain.Kdoc
+import com.bambi.kdocify.domain.Tag
+import com.bambi.kdocify.domain.getDefaultCommentName
+import com.bambi.kdocify.domain.kdoc
+import com.bambi.kdocify.settings.AppSettingsState
 import com.bambi.kdocify.utils.getCheckedType
-import com.bambi.kdocify.utils.getDefaultCommentFromName
-import com.intellij.psi.PsiNameIdentifierOwner
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
+/**
+ * [안녕] Named Function K Doc Generator.
+ *
+ */
 class NamedFunctionKDocGenerator(private val function: KtNamedFunction) : KDocGenerator {
+    override fun getGeneratedComment(): Kdoc {
+        return with(function) {
+            kdoc {
+                title {
+                    getDefaultCommentName(
+                        serviceName = AppSettingsState.status.serviceName,
+                        title = name,
+                        withDot = true
+                    )
+                }
 
-    override fun getGeneratedComment(): String = buildString {
-        appendLine("/**")
-        appendFunctionName()
-        appendControllerMethodIfNeeded()
-        appendEmptyFunctionSpaceIfNeeded()
-        appendReceiverReference()
-        appendTypeParameters()
-        appendValueParameters()
-        appendReturnAnnotation()
-        appendLine("*/")
-    }
+                tags {
+                    if (receiverTypeReference != null) {
+                        receiver(name = receiverTypeReference?.text.getCheckedType())
+                    }
 
-    private fun StringBuilder.appendFunctionName() {
-        appendLine("* ${function.name.getDefaultCommentFromName()}")
-    }
+                    if (typeParameters.isNotEmpty()) {
+                        addAll(typeParameters.map { Tag.Parameter(it.name) })
+                    }
 
-    private fun StringBuilder.appendControllerMethodIfNeeded() {
-        if (isControllerMethod(function)) {
-            appendLine("*")
-            appendLine("* called by: ")
+                    if (valueParameters.isNotEmpty()) {
+                        addAll(valueParameters.map { Tag.Parameter(it.name) })
+                    }
+
+                    if (isTypedReferenceFunction()) {
+                        `return`(typeReference?.text.getCheckedType())
+                    } else if (function.text.isFunctionWithHiddenTypedReference()) {
+                        `return`("")
+                    }
+                }
+            }
         }
     }
-
-    private fun StringBuilder.appendEmptyFunctionSpaceIfNeeded() {
-        if (function.isNotEmptyFunction()) appendLine("*")
-    }
-
-    private fun StringBuilder.appendReceiverReference() {
-        function.receiverTypeReference?.let {
-            appendLine("* @receiver ${it.text.getCheckedType()}")
-        }
-    }
-
-    private fun StringBuilder.appendTypeParameters() {
-        if (function.typeParameters.isNotEmpty()) {
-            appendLine(function.typeParameters.toKdocParams())
-        }
-    }
-
-    private fun StringBuilder.appendValueParameters() {
-        if (function.valueParameters.isNotEmpty()) {
-            appendLine(function.valueParameters.toKdocParams())
-        }
-    }
-
-    private fun StringBuilder.appendReturnAnnotation() {
-        when {
-            function.isTypedReferenceFunction() ->
-                appendLine("* @return ${function.typeReference?.text.getCheckedType()}")
-
-            function.text.isFunctionWithHiddenTypedReference() ->
-                appendLine("* @return")
-        }
-    }
-
-    private fun isControllerMethod(ktNamedFunction: KtNamedFunction): Boolean {
-        val mappings = listOf("GetMapping", "PostMapping", "PutMapping", "DeleteMapping", "PatchMapping")
-        return ktNamedFunction.annotationEntries.any { it.shortName?.asString() in mappings }
-    }
-
-    private fun KtNamedFunction.isNotEmptyFunction(): Boolean =
-        receiverTypeReference != null ||
-                typeParameters.isNotEmpty() ||
-                valueParameters.isNotEmpty() ||
-                isTypedReferenceFunction() ||
-                text.isFunctionWithHiddenTypedReference()
 
     private fun KtNamedFunction.isTypedReferenceFunction(): Boolean =
-        typeReference?.text?.let { it != "Unit" } ?: false
+        typeReference != null && typeReference?.text != "Unit"
 
-    override fun List<PsiNameIdentifierOwner>.toKdocParams(keyword: String): String =
-        joinToString(separator = "\n") {
-            "* $keyword ${it.name} ${it.name.getDefaultCommentFromName(withDot = false)}"
-        }
 
     private fun String?.isFunctionWithHiddenTypedReference(): Boolean {
-        var braceCounter = 0
+        var bakeCounter = 0
         var endOfSignatureFound = false
         this?.forEach { char ->
             when {
                 endOfSignatureFound -> {
-                    if (char == '=') return true
-                    else if (char == '{') return false
+                    if (char == '=')
+                        return true
+                    else if (char == '{')
+                        return false
                 }
 
-                char == '(' -> braceCounter++
-                char == ')' -> endOfSignatureFound = --braceCounter == 0
+                char == '(' -> {
+                    bakeCounter++
+                }
+
+                char == ')' -> {
+                    endOfSignatureFound = --bakeCounter == 0
+                }
             }
         }
         return false
