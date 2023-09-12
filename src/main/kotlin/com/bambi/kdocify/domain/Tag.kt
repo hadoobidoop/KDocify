@@ -6,12 +6,27 @@ sealed class Tag {
         override fun asKdocString() = " * @constructor $name"
     }
 
-
-    data class Property(val name: String?) : Tag() {
-        override fun asKdocString() = " * @property $name"
+    /**
+     * Property.
+     *
+     * @property name this is property
+     * @property description this is property
+     * @constructor Create [Property]
+     */
+    data class Property(val name: String?,
+                        val description: String?, // this is property
+                        ) : Tag() {
+        override fun asKdocString() = " * @property $name $description"
     }
 
-    data class Parameter(val name: String?) : Tag() {
+    /**
+ * Parameter.
+ *
+ * @property name null
+ * @constructor Create [Parameter]
+ */
+    data class Parameter(val name: String? //안녕
+    ) : Tag() {
         override fun asKdocString() = " * @param $name"
     }
 

@@ -5,9 +5,18 @@ import com.bambi.kdocify.domain.Tag
 import com.bambi.kdocify.domain.getDefaultCommentName
 import com.bambi.kdocify.domain.kdoc
 import com.bambi.kdocify.settings.AppSettingsState
+import com.bambi.kdocify.utils.getEndOfLineComment
 import org.jetbrains.kotlin.psi.KtClass
 
-class ClassKDocGenerator(private val klass: KtClass) : KDocGenerator {
+/**
+ * Class K Doc Generator.
+ *
+ * @property klass dksdf
+ * @constructor Create [ClassKDocGenerator]
+ */
+class ClassKDocGenerator(
+    private val klass: KtClass,//dksdf
+) : KDocGenerator {
     override fun getGeneratedComment(): Kdoc {
 
         return with(klass) {
@@ -29,10 +38,16 @@ class ClassKDocGenerator(private val klass: KtClass) : KDocGenerator {
                     }
                     if (parameters.isNotEmpty()) {
                         addAll(parameters.map { Tag.Parameter(it.name) })
+                        addAll(properties.map { Tag.Property(name = it.name, it.getEndOfLineComment() ?: "") })
                     }
 
                     if (properties.isNotEmpty()) {
-                        addAll(properties.map { Tag.Property(it.name) })
+                        addAll(properties.map {
+                            Tag.Property(
+                                name = it.name,
+                                description = (it.getEndOfLineComment() ?: "")
+                            )
+                        })
                     }
                     if (properties.isNotEmpty() || parameters.isNotEmpty()) {
                         constructor("Create [$name]")
@@ -46,9 +61,6 @@ class ClassKDocGenerator(private val klass: KtClass) : KDocGenerator {
                                 )
                             }"
                         )
-                    }
-                    if (parameters.isNotEmpty()) {
-                        addAll(properties.map { Tag.Property(name = it.name) })
                     }
                 }
             }

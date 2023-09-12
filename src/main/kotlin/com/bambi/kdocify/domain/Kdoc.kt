@@ -19,6 +19,12 @@ data class Kdoc(
         }
 }
 
+/**
+ * Kdoc.
+ *
+ * @param init
+ * @return [Kdoc]
+ */
 fun kdoc(init: KdocBuilder.() -> Unit): Kdoc {
     return KdocBuilder().apply(init).build()
 }

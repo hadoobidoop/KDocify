@@ -1,5 +1,4 @@
 package com.bambi.kdocify
-
 import com.bambi.kdocify.domain.getDefaultCommentName
 import com.bambi.kdocify.generators.ClassKDocGenerator
 import com.bambi.kdocify.generators.InterfaceKDocGenerator
@@ -12,6 +11,7 @@ import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
@@ -25,66 +25,66 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtSecondaryConstructor
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 
+
 class CommentGenerationEnterHandlerDelegateAdapter : EnterHandlerDelegateAdapter() {
     override fun postProcessEnter(
         file: PsiFile,
         editor: Editor,
         dataContext: DataContext
     ): EnterHandlerDelegate.Result {
-        if (!file.shouldProcessForKDoc(editor))
+        if (file !is KtFile || !CodeInsightSettings.getInstance().SMART_INDENT_ON_ENTER)
             return EnterHandlerDelegate.Result.Continue
 
-        generateKDocComment(file, editor)
+        val caretModel = editor.caretModel
+        if (!isInKDoc(editor, caretModel.offset))
+            return EnterHandlerDelegate.Result.Continue
 
-        return EnterHandlerDelegate.Result.Continue
-    }
-
-    private fun PsiFile.shouldProcessForKDoc(editor: Editor): Boolean {
-        return this is KtFile &&
-                CodeInsightSettings.getInstance().SMART_INDENT_ON_ENTER &&
-                editor.isInKDoc()
-    }
-
-    private fun Editor.isInKDoc(): Boolean {
-        val docChars = document.charsSequence
-        val start = CharArrayUtil.lastIndexOf(docChars, "/**", caretModel.offset)
-        return if (start >= 0) {
-            val end = CharArrayUtil.indexOf(docChars, "*/", start)
-            end > caretModel.offset
-        } else false
-    }
-
-    private fun generateKDocComment(file: PsiFile, editor: Editor) {
         val project = file.project
-        val elementAtCaret = file.findElementAt(editor.caretModel.offset)
-        val kdoc = PsiTreeUtil.getParentOfType(elementAtCaret, KDoc::class.java) ?: return
+        val documentManager = PsiDocumentManager.getInstance(project)
+        documentManager.commitAllDocuments()
 
-        val kdocSection = kdoc.getChildOfType<KDocSection>() ?: return
-        if (kdocSection.text.trim() != "*") return
+        val elementAtCaret = file.findElementAt(caretModel.offset)
+        val kdoc = PsiTreeUtil.getParentOfType(elementAtCaret, KDoc::class.java)
+            ?: return EnterHandlerDelegate.Result.Continue
+        val kdocSection = kdoc.getChildOfType<KDocSection>() ?: return EnterHandlerDelegate.Result.Continue
+
+        if (kdocSection.text.trim() != "*")
+            return EnterHandlerDelegate.Result.Continue
 
         ApplicationManager.getApplication().runWriteAction {
             val kDocElementFactory = KDocElementFactory(project)
+
             val parent = kdoc.parent
-            val kdocGenerator = when {
+            when {
                 parent is KtNamedFunction -> NamedFunctionKDocGenerator(parent)
                 parent is KtClass && parent.isInterface() -> InterfaceKDocGenerator(parent)
                 parent is KtClass -> ClassKDocGenerator(parent)
                 parent is KtSecondaryConstructor -> SecondaryConstructorKDocGenerator(parent)
                 else -> null
-            }
-
-            kdocGenerator?.getGeneratedComment()?.let {
-                val newKdoc = kDocElementFactory.createKDocFromText(it.toString())
-                val formattedKdoc = CodeStyleManager.getInstance(project).reformat(newKdoc)
-                kdoc.replace(formattedKdoc)
-                editor.caretModel.moveToOffset(
-                    formattedKdoc.getChildOfType<KDocSection>()?.textOffset ?: (0 + OFFSET_CONST)
-                )
-            } ?: getDefaultCommentName(AppSettingsState.status.serviceName, parent.text, false)
+            }?.getGeneratedComment()?.let {
+                kDocElementFactory.createKDocFromText(it.toString())
+                    .let { kdoc.replace(it) }
+                    .let { CodeStyleManager.getInstance(project).reformat(it) }
+            }?.let {
+                it.getChildOfType<KDocSection>()?.let {
+                    caretModel.moveToOffset(it.textOffset + 6)
+                }
+            } ?: getDefaultCommentName(
+                serviceName = AppSettingsState.status.serviceName,
+                title = parent.text,
+                withDot = false
+            )
         }
+        return EnterHandlerDelegate.Result.Continue
     }
-
-    companion object {
-        const val OFFSET_CONST = 6
+    private fun isInKDoc(editor: Editor, offset: Int): Boolean {
+        val document = editor.document
+        val docChars = document.charsSequence
+        var i = CharArrayUtil.lastIndexOf(docChars, "/**", offset)
+        if (i >= 0) {
+            i = CharArrayUtil.indexOf(docChars, "*/", i)
+            return i > offset
+        }
+        return false
     }
 }
